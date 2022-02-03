@@ -13,12 +13,11 @@ pip install pytz icalendar
 ```
 
 ## Usage
-* Make an export of your calendar in ICS format
-* Save the ics file as `in.ics` in the folder of this script
-* Set the `YEAR` variable inside the script (events older than this year will be filtered out)
-* Run `python icalfilter.py`, a filtered version of the calendar named `out.ics` is produced
-* Clear out your original calendar (making a backup first is highly recommended)
-* Re-import the filterd `out.ics` file.
+* Download calendar from icloud with wget
+* Run `python3 icalfilter.py infile.ics outfile.ics`, a filtered version of the calendar named `out.ics` is produced, events older than the current year will be filtered out
+* Use the file for magicmirror or similar
 
-
-
+The script can be integrated to automatically produce a smaller file and called by cron:
+```
+*/15 * * * * wget -O ~/magicmirror/mounts/modules/ics/mycal.ics.raw https://p16-caldav.icloud.com/published/2/MTASDF-YOUR-CALENDAR-URL >/dev/null 2>&1 && python3 ~/icalfilter/icalfilter.py ~/magicmirror/mounts/modules/ics/mycal.ics.raw ~/magicmirror/mounts/modules/ics/mycal.ics >/dev/null 2>&1 || rm -rf ~/magicmirror/mounts/modules/ics/mycal.ics
+```

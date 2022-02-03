@@ -1,14 +1,18 @@
 import icalendar
 import datetime
 import pytz
+import sys
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
 utc = pytz.utc
 
 d = datetime.date.today()
 year = d.strftime("%Y")
-YEAR = int("2022") - 1
+YEAR = int(year) - 1
 
 def main():
-    with open('in.ics', 'r', encoding='utf-8') as f:
+    with open(infile, 'r', encoding='utf-8') as f:
         cal = icalendar.Calendar.from_ical(f.read())
         outcal = icalendar.Calendar()
 
@@ -18,7 +22,7 @@ def main():
         def active_event(item):
             start_date = item['dtstart'].dt
 
-            # recurrent
+             # recurrent
             if 'RRULE' in item:
                 rrule = item['RRULE']
                 # print (rrule)
@@ -29,19 +33,19 @@ def main():
                     until_date = rrule['UNTIL'][0]
 
                     if type(until_date) == datetime.datetime:
-                        return until_date >= utc.localize(datetime.datetime(YEAR, 1, 1))
+                        return until_date.timestamp() >= datetime.datetime(YEAR, 1, 1).timestamp()
 
                     if type(until_date) == datetime.date:
-                        return until_date >= datetime.date(2019, 1, 1)
+                        return until_date >= datetime.date(YEAR, 1, 1)
 
                     raise Exception('Unknown date format for "UNTIL" field')
 
             # not reccurrent
             if type(start_date) == datetime.datetime:
-                return start_date >= utc.localize(datetime.datetime(YEAR, 1, 1))
+                return start_date.timestamp() >= datetime.datetime(YEAR, 1, 1).timestamp()
 
             if type(start_date) == datetime.date:
-                return start_date >= datetime.date(2019, 1, 1)
+                return start_date >= datetime.date(YEAR, 1, 1)
 
             raise Exception('ARGH')
 
@@ -58,7 +62,7 @@ def main():
             else:
                 outcal.add_component(item)
 
-        with open('out.ics', 'wb') as outf:
+        with open(outfile, 'wb') as outf:
             outf.write(outcal.to_ical(sorted=False))
 
 main()

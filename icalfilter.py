@@ -3,7 +3,9 @@ import datetime
 import pytz
 utc = pytz.utc
 
-YEAR = 2018
+d = datetime.date.today()
+year = d.strftime("%Y")
+YEAR = int("2022") - 1
 
 def main():
     with open('in.ics', 'r', encoding='utf-8') as f:
